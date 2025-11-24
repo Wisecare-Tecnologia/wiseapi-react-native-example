@@ -2,6 +2,11 @@
 
 Este é um projeto de exemplo demonstrando o uso da **WiseAPI** em aplicações React Native com Expo.
 
+## Screenshots
+
+- [Android](screenshots/android.png)
+- [iOS](screenshots/ios.png)
+
 ## Sobre
 
 Este aplicativo demonstra a integração da biblioteca `lib-wiseapi-react-native` para realizar videoconferências utilizando a plataforma WiseAPI.

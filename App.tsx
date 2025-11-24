@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { WiseConf } from 'lib-wiseapi-react-native';
+import { Camera } from 'expo-camera';
 
 export default function App() {
   const [domain, setDomain] = useState('');
@@ -9,9 +10,21 @@ export default function App() {
   const [sessionToken, setSessionToken] = useState('');
   const [showConference, setShowConference] = useState(false);
 
-  const handleOpenConference = () => {
+  const handleOpenConference = async () => {
     if (!domain || !session || !sessionToken) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
+
+    // Solicitar permissões de câmera e microfone
+    const cameraPermission = await Camera.requestCameraPermissionsAsync();
+    const microphonePermission = await Camera.requestMicrophonePermissionsAsync();
+
+    if (cameraPermission.status !== 'granted' || microphonePermission.status !== 'granted') {
+      Alert.alert(
+        'Permissões necessárias',
+        'Para participar da videochamada, você precisa permitir o acesso à câmera e ao microfone.'
+      );
       return;
     }
 
@@ -20,16 +33,25 @@ export default function App() {
 
   if (showConference) {
     return (
-      <WiseConf
-        domain={domain}
-        session={session}
-        sessionToken={sessionToken}
-        buttons={['camera', 'microphone', 'hangup']}
-        logo='https://wisecare.com.br/images/logo-rodape.svg'
-        listeners={{
-          onReadyToClose: () => setShowConference(false)
-        }}
-      />
+      <View style={styles.conferenceContainer}>
+        <View style={styles.debugInfo}>
+          <Text style={styles.debugTitle}>Valores enviados:</Text>
+          <Text style={styles.debugText}>Domain: {domain}</Text>
+          <Text style={styles.debugText}>Session: {session}</Text>
+          <Text style={styles.debugText}>SessionToken: {sessionToken}</Text>
+        </View>
+        <WiseConf
+          domain={domain}
+          session={session}
+          sessionToken={sessionToken}
+          enablePreJoin={false}
+          buttons={['camera', 'microphone', 'hangup']}
+          logo='https://wisecare.com.br/images/logo-rodape.svg'
+          listeners={{
+            onReadyToClose: () => setShowConference(false)
+          }}
+        />
+      </View>
     );
   }
 
@@ -127,5 +149,22 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  conferenceContainer: {
+    flex: 1,
+  },
+  debugInfo: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    paddingTop: 50,
+  },
+  debugTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  debugText: {
+    fontSize: 12,
+    color: '#333',
   },
 });
