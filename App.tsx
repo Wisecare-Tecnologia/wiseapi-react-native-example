@@ -1,35 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { WiseConf } from 'lib-wiseapi-react-native';
-import { Camera } from 'expo-camera';
+import { Camera } from 'expo-camera'
+import { StatusBar } from 'expo-status-bar'
+import { WiseConf } from 'lib-wiseapi-react-native'
+import { useState } from 'react'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native'
 
 export default function App() {
-  const [domain, setDomain] = useState('');
-  const [session, setSession] = useState('');
-  const [sessionToken, setSessionToken] = useState('');
-  const [showConference, setShowConference] = useState(false);
+  const [domain, setDomain] = useState('')
+  const [session, setSession] = useState('')
+  const [sessionToken, setSessionToken] = useState('')
+  const [showConference, setShowConference] = useState(false)
 
   const handleOpenConference = async () => {
     if (!domain || !session || !sessionToken) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos');
-      return;
+      Alert.alert('Erro', 'Por favor, preencha todos os campos')
+      return
     }
 
     // Solicitar permissões de câmera e microfone
-    const cameraPermission = await Camera.requestCameraPermissionsAsync();
-    const microphonePermission = await Camera.requestMicrophonePermissionsAsync();
+    const cameraPermission = await Camera.requestCameraPermissionsAsync()
+    const microphonePermission = await Camera.requestMicrophonePermissionsAsync()
 
     if (cameraPermission.status !== 'granted' || microphonePermission.status !== 'granted') {
       Alert.alert(
         'Permissões necessárias',
-        'Para participar da videochamada, você precisa permitir o acesso à câmera e ao microfone.'
-      );
-      return;
+        'Para participar da videochamada, você precisa permitir o acesso à câmera e ao microfone.',
+      )
+      return
     }
 
-    setShowConference(true);
-  };
+    setShowConference(true)
+  }
 
   if (showConference) {
     return (
@@ -45,14 +45,15 @@ export default function App() {
           session={session}
           sessionToken={sessionToken}
           enablePreJoin={false}
+          startWithTileView={true}
           buttons={['camera', 'microphone', 'hangup']}
-          logo='https://wisecare.com.br/images/logo-rodape.svg'
+          logo="https://wisecare.com.br/images/logo-rodape.svg"
           listeners={{
-            onReadyToClose: () => setShowConference(false)
+            onReadyToClose: () => setShowConference(false),
           }}
         />
       </View>
-    );
+    )
   }
 
   return (
@@ -92,16 +93,13 @@ export default function App() {
         />
       </View>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleOpenConference}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleOpenConference}>
         <Text style={styles.buttonText}>Abrir Conferência</Text>
       </TouchableOpacity>
 
       <StatusBar style="auto" />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -167,4 +165,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#333',
   },
-});
+})
